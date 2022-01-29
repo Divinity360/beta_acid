@@ -1,4 +1,8 @@
+import 'package:beta_acid/models/Album.dart';
+import 'package:beta_acid/providers/AlbumProvider.dart';
+import 'package:beta_acid/widgets/AlbumCard.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AlbumPage extends StatefulWidget {
   const AlbumPage({Key? key}) : super(key: key);
@@ -8,44 +12,41 @@ class AlbumPage extends StatefulWidget {
 }
 
 class _AlbumPageState extends State<AlbumPage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<AlbumProvider>(context, listen: false).fetchAlbumsList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Jack Johnson"),
+        title: const Text("Albums"),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+          child: Selector<AlbumProvider, List<Album>?>(
+              builder: (context, albumsList, child) {
+                return albumsList != null
+                    ? ListView.builder(
+                        itemCount: albumsList.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          final album = albumsList.elementAt(index);
+                          return AlbumCard(
+                            album: album,
+                            id: album.collectionId!,
+                            albumCoverImg: album.artworkUrl100!,
+                            albumName: album.collectionName!,
+                            albumPrice: album.collectionPrice!,
+                            isFavorite: album.isFavorite,
+                            releaseDate: album.releaseDate!,
+                          );
+                        })
+                    : Container();
+              },
+              selector: (buildContext, albumsProvider) =>
+                  albumsProvider.albumsList)),
     );
   }
 }

@@ -23,6 +23,21 @@ class _AlbumPageState extends State<AlbumPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Albums"),
+        actions: [
+          Selector<AlbumProvider, int>(
+              builder: (context, favCount, child) => Padding(
+                    child: Text(
+                      favCount.toString(),
+                      style: const TextStyle(
+                          fontSize: 21, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    padding: const EdgeInsets.only(right: 30, top: 20),
+                  ),
+              shouldRebuild: (previous, next) => true,
+              selector: (buildContext, albumsProvider) =>
+                  albumsProvider.albumsFavCount)
+        ],
       ),
       body: Center(
           child: Selector<AlbumProvider, List<Album>?>(
@@ -34,7 +49,6 @@ class _AlbumPageState extends State<AlbumPage> {
                         itemBuilder: (context, index) {
                           final album = albumsList.elementAt(index);
                           return AlbumCard(
-                            album: album,
                             id: album.collectionId!,
                             albumCoverImg: album.artworkUrl100!,
                             albumName: album.collectionName!,
@@ -43,8 +57,9 @@ class _AlbumPageState extends State<AlbumPage> {
                             releaseDate: album.releaseDate!,
                           );
                         })
-                    : Container();
+                    : const CircularProgressIndicator();
               },
+              shouldRebuild: (previous, next) => true,
               selector: (buildContext, albumsProvider) =>
                   albumsProvider.albumsList)),
     );

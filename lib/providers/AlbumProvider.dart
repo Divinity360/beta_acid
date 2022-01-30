@@ -8,6 +8,13 @@ class AlbumProvider with ChangeNotifier {
 
   List<Album>? get albumsList => _albumsList;
 
+  int get albumsFavCount {
+    if (_albumsList != null) {
+      return _albumsList!.where((album) => album.isFavorite).toList().length;
+    }
+    return 0;
+  }
+
   Future fetchAlbumsList() async {
     List<Album>? response = await ApiService.fetchAlbums();
     if (response != null) {
@@ -18,5 +25,13 @@ class AlbumProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
+  toggleAlbumFavorite(int id) {
+    if (_albumsList != null) {
+      int albumIndex =
+          _albumsList!.indexWhere((album) => album.collectionId == id);
+      _albumsList![albumIndex].isFavorite =
+          !_albumsList![albumIndex].isFavorite;
+      notifyListeners();
+    }
+  }
 }

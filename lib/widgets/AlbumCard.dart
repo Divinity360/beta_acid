@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AlbumCard extends StatelessWidget {
-  final Album album;
   final int id;
   final String albumName;
   final String albumCoverImg;
@@ -16,7 +15,6 @@ class AlbumCard extends StatelessWidget {
   const AlbumCard(
       {Key? key,
       required this.id,
-      required this.album,
       required this.albumName,
       required this.albumCoverImg,
       required this.isFavorite,
@@ -26,7 +24,7 @@ class AlbumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final albumProvider = Provider.of<AlbumProvider>(context, listen: false);
+    final albumProvider = Provider.of<AlbumProvider>(context);
     final parsedReleaseDate = DateTime.parse(releaseDate);
     final formattedDate =
         DateFormat('yyyy-MM-dd hh:mm a').format(parsedReleaseDate);
@@ -69,7 +67,7 @@ class AlbumCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 3),
               child: Text(
-                albumPrice.toString(),
+                '\$$albumPrice',
                 style:
                     const TextStyle(fontSize: 13, fontWeight: FontWeight.w300),
                 textAlign: TextAlign.center,
@@ -90,9 +88,9 @@ class AlbumCard extends StatelessWidget {
                 icon: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
                   color: Colors.redAccent,
-                  size: 15,
+                  size: 24,
                 ),
-                onPressed: () => albumProvider.updateAlbumFavorite(album),
+                onPressed: () => albumProvider.toggleAlbumFavorite(id),
               ),
             ),
           ],
